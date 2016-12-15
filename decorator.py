@@ -1,26 +1,41 @@
-# http://stackoverflow.com/questions/3118929/implementing-the-decorator-pattern-in-python
+#!/usr/bin/env python
+"""
+Reference: https://en.wikipedia.org/wiki/Decorator_pattern
+"""
 
 
-class foo(object):
-    def f1(self):
-        print("original f1")
+class TextTag(object):
+    """Represents a base text tag"""
+    def __init__(self, text):
+        self._text = text
 
-    def f2(self):
-        print("original f2")
+    def render(self):
+        return self._text
 
 
-class foo_decorator(object):
-    def __init__(self, decoratee):
-        self._decoratee = decoratee
+class BoldWrapper(object):
+    """Wraps a tag in <b>"""
+    def __init__(self, wrapped):
+        self._wrapped = wrapped
 
-    def f1(self):
-        print("decorated f1")
-        self._decoratee.f1()
+    def render(self):
+        return "<b>{}</b>".format(self._wrapped.render())
 
-    def __getattr__(self, name):
-        return getattr(self._decoratee, name)
 
-u = foo()
-v = foo_decorator(u)
-v.f1()
-v.f2()
+class ItalicWrapper(object):
+    """Wraps a tag in <i>"""
+    def __init__(self, wrapped):
+        self._wrapped = wrapped
+
+    def render(self):
+        return "<i>{}</i>".format(self._wrapped.render())
+
+if __name__ == '__main__':
+    simple_hello = TextTag("hello, world!")
+    special_hello = ItalicWrapper(BoldWrapper(simple_hello))
+    print("before:", simple_hello.render())
+    print("after:", special_hello.render())
+
+### OUTPUT ###
+# before: hello, world!
+# after: <i><b>hello, world!</b></i>
